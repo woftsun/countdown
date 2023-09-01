@@ -18,10 +18,20 @@
             class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
           距离发工资还有 4 天
         </li>
+        <li
+            class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
+          距离过年还有 {{ newYearTime }} 天
+        </li>
       </ul>
       <div
-          class="border-neutral-100 p-4 dark:border-neutral-600 dark:text-neutral-50">
-        距离过年还有 {{ newYearTime }} 天
+          class="border-neutral-100 p-4 dark:border-neutral-600 dark:text-neutral-50 flex justify-between items-center">
+       <strong>当前时间:  {{ dayjs().format('YYYY-MM-DD HH:mm:ss') }}</strong>
+        <button
+            type="button"
+            class="inline-block rounded border-2 border-primary-100 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200 dark:text-primary-100 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+            data-te-ripple-init>
+          设置
+        </button>
       </div>
     </div>
   </div>
@@ -33,6 +43,11 @@ import 'element-plus/dist/index.css'
 import calendar from 'js-calendar-converter'
 import {onMounted, ref} from 'vue'
 import { ElCard } from 'element-plus'
+import {
+  Ripple,
+  initTE,
+} from "tw-elements";
+initTE({ Ripple });
 import dayjs from 'dayjs'
 const targetAfterTime = dayjs('18:00:00', 'HH:mm:ss')
 const newYearTime = ref();
