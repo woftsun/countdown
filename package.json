@@ -1,0 +1,47 @@
+{
+  "name": "with-vue",
+  "displayName": "倒计时",
+  "version": "1.0.0",
+  "description": "摸鱼小插件.",
+  "author": "lgvic",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build --source-maps --target=chrome-mv3",
+    "test": "plasmo test"
+  },
+  "dependencies": {
+    "@plasmohq/messaging": "^0.5.0",
+    "@plasmohq/storage": "^1.6.0",
+    "axios": "^1.4.0",
+    "dayjs": "^1.11.9",
+    "element-plus": "^2.3.12",
+    "event-source-polyfill": "^1.0.31",
+    "js-calendar-converter": "^0.0.6",
+    "plasmo": "0.57.2",
+    "vue": "3.2.41"
+  },
+  "devDependencies": {
+    "@plasmohq/prettier-plugin-sort-imports": "3.5.4",
+    "@types/chrome": "0.0.198",
+    "@types/node": "18.11.2",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.29",
+    "prettier": "2.7.1",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^4.8.4"
+  },
+  "manifest": {
+    "permissions": [
+      "cookies",
+      "tabs",
+      "activeTab",
+      "notifications",
+      "webRequest",
+      "webRequestBlocking"
+    ],
+    "host_permissions": [
+      "*://*/*",
+      "<all_urls>"
+    ]
+  }
+}
