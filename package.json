@@ -6,7 +6,7 @@
   "author": "lgvic",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "plasmo build --source-maps --target=chrome-mv3",
+    "build": "plasmo build",
     "test": "plasmo test"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
       "cookies",
       "tabs",
       "activeTab",
+        "storage",
       "notifications",
       "webRequest",
       "webRequestBlocking"
