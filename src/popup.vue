@@ -14,7 +14,6 @@
           class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
           距离下班还有 <strong>{{ afterWorkTime.hours }}</strong> 小时
           <strong>{{ afterWorkTime.minutes }}</strong> 分钟
-          <strong>{{ afterWorkTime.seconds }}</strong> 秒
         </li>
         <li
           v-else
@@ -26,7 +25,6 @@
           距离周末还有 <strong>{{ weekendTime.days }}</strong> 天
           <strong>{{ weekendTime.hours }}</strong> 小时
           <strong>{{ weekendTime.minutes }}</strong> 分钟
-          <strong>{{ weekendTime.seconds }}</strong> 秒
         </li>
         <li
           class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
@@ -117,7 +115,7 @@ import {
 } from "element-plus"
 import calendar from "js-calendar-converter"
 import { Ripple, initTE } from "tw-elements"
-import { computed, onMounted, ref } from "vue"
+import { computed, onMounted, ref, toRaw } from "vue"
 
 import { Storage } from "@plasmohq/storage"
 
@@ -163,19 +161,23 @@ const daysUntilNextPayDay = ref(0)
 const saveStatus = ref(false)
 
 const calcAfterTime = () => {
-  const tempTime = dayjs(timeForm.value.time, "HH:mm")
+  const tempTime = dayjs(
+    JSON.parse(JSON.stringify(timeForm.value.time)),
+    "HH:mm"
+  )
   const currentTime = dayjs()
   let diff = tempTime.diff(currentTime)
-  // 如果当前时间超过下班时间，但还在今天，则设置 diff 为 0
-  if (diff < 0 && currentTime.isSame(tempTime, "day")) {
-    afterWorkTime.value.diff = 0
-  }
 
   afterWorkTime.value = {
     hours: Math.floor(diff / (1000 * 60 * 60)),
     minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
     seconds: Math.floor((diff % (1000 * 60)) / 1000),
     diff
+  }
+
+  // 如果当前时间超过下班时间，但还在今天，则设置 diff 为 0
+  if (diff < 0 && currentTime.isSame(tempTime, "day")) {
+    afterWorkTime.value.diff = 0
   }
 }
 
@@ -195,12 +197,18 @@ const getMessage = computed(() => {
 })
 
 const calcWeekend = () => {
-  const tempTime = dayjs(timeForm.value.time, "HH:mm")
+  const currentDate = dayjs().format("YYYY-MM-DD")
+  const fullDateTime = `${currentDate} ${timeForm.value.time}`
+
+  const tempTime = dayjs(fullDateTime, "YYYY-MM-DD HH:mm")
   let closingTimeFriday = dayjs()
     .day(5)
     .set("hour", tempTime.hour())
     .set("minute", tempTime.minute())
     .set("second", 0)
+
+  console.log(tempTime)
+
   const currentTime = dayjs()
   // 如果当前时间已经过了本周五的下班时间，将目标时间设为下周五的下班时间
   if (currentTime.isAfter(closingTimeFriday)) {
