@@ -1,49 +1,55 @@
 <template>
   <div style="width: 500px" class="p-4">
     <div
-      class="mb-4 rounded-md border-l-[6px] border-solid border-blue-600 bg-blue-100 p-2.5 dark:border-white dark:bg-sky-900">
+      class="mb-4 rounded-md border-l-[6px] border-solid border-blue-600 bg-blue-100 p-2.5">
       今天是
       <strong>{{ dayOfWeekMap[dayjs().locale("zh-cn").format("dddd")] }}</strong
       >，{{ getMessage }}
     </div>
     <div
-      class="border-b block w-full rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700">
+      class="border-b block w-full rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
       <ul class="w-full">
         <li
-          v-if="afterWorkTime.diff > 0"
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
-          距离下班还有 <strong>{{ afterWorkTime.hours }}</strong> 小时
-          <strong>{{ afterWorkTime.minutes }}</strong> 分钟
+            v-if="weekendTime.diff > 0"
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
+          距离下班还有 <strong>{{ weekendTime.hours }}</strong> 小时
+          <strong>{{ weekendTime.minutes }}</strong> 分钟
         </li>
         <li
           v-else
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50 text-red-600">
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 text-red-600">
           <strong>下班了，快回家吧！</strong>
         </li>
         <li
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
           距离周末还有 <strong>{{ weekendTime.days }}</strong> 天
           <strong>{{ weekendTime.hours }}</strong> 小时
           <strong>{{ weekendTime.minutes }}</strong> 分钟
         </li>
         <li
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
+            v-if="daysUntilNextPayDay !== 0"
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
           距离发工资还有 <strong>{{ daysUntilNextPayDay }}</strong> 天
         </li>
         <li
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 dark:border-opacity-50">
+            v-else
+            class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 text-red-600">
+          <strong>工资发放，就在今天</strong>
+        </li>
+        <li
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
           距离过年还有 <strong>{{ newYearTime }}</strong> 天
         </li>
       </ul>
 
       <div
-        class="border-neutral-100 p-4 dark:border-neutral-600 dark:text-neutral-50 flex justify-between items-center">
+        class="border-neutral-100 p-4 flex justify-between items-center">
         <strong>当前时间: {{ dayjs().format("YYYY-MM-DD HH:mm:ss") }}</strong>
         <button
           v-if="!saveStatus"
           type="button"
           @click="setTime"
-          class="inline-block rounded border-2 border-primary-100 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200 dark:text-primary-100 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+          class="inline-block rounded border-2 border-primary-100 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200"
           data-te-ripple-init>
           设置
         </button>
@@ -51,7 +57,7 @@
           v-else
           @click="save"
           type="button"
-          class="inline-block rounded border-2 border-primary-100 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200 dark:text-primary-100 dark:hover:bg-neutral-100 dark:hover:bg-opacity-10"
+          class="inline-block rounded border-2 border-primary-100 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200"
           data-te-ripple-init>
           保存
         </button>
@@ -59,10 +65,10 @@
     </div>
     <div
       v-if="saveStatus"
-      class="block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 mt-5">
+      class="block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
       <div class="p-6">
         <h5
-          class="mb-2 text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50">
+          class="mb-2 text-xl font-medium leading-tight text-neutral-800">
           设置高光时刻
         </h5>
         <el-form
@@ -93,7 +99,7 @@
             </el-select>
           </el-form-item>
         </el-form>
-        <p class="font-bold text-neutral-500 dark:text-neutral-200 text-right">
+        <p class="font-bold text-neutral-500 text-right">
           中午吃什么功能敬请期待！
         </p>
       </div>
@@ -207,8 +213,6 @@ const calcWeekend = () => {
     .set("minute", tempTime.minute())
     .set("second", 0)
 
-  console.log(tempTime)
-
   const currentTime = dayjs()
   // 如果当前时间已经过了本周五的下班时间，将目标时间设为下周五的下班时间
   if (currentTime.isAfter(closingTimeFriday)) {
@@ -221,42 +225,47 @@ const calcWeekend = () => {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
     hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
     minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-    seconds: Math.floor((diff % (1000 * 60)) / 1000)
+    seconds: Math.floor((diff % (1000 * 60)) / 1000),
+    diff
   }
+
+  const specificDateTime = currentTime.set('hour', Number(timeForm.value.time.split(':')[0])).set('minute', Number(timeForm.value.time.split(':')[1]));
+
+
+  if ((currentTime.isAfter(specificDateTime) && currentTime.hour() < 23)) duration.diff = 0
 
   weekendTime.value = duration
 }
 
 const calcPay = () => {
-  const currentYear = dayjs().year()
-  const currentMonth = dayjs().month() + 1 // 月份从 0 开始，所以要加 1
+  // 获取当前年份和月份
+  const currentYear = dayjs().year();
+  const currentMonth = dayjs().month() + 1; // 月份从 0 开始，所以要加 1
 
-  // 获取当前日期的天数
-  const currentDate = dayjs().date()
+  // 获取当前日期和时间
+  const currentDate = dayjs();
 
-  // 获取选择的支付日
-  const selectedPayDay = timeForm.value.day
-
-  // 获取当月的天数
-  const lastDayOfMonth = dayjs(`${currentYear}-${currentMonth}`).daysInMonth()
-
-  // 判断选择的支付日是否大于当月的天数
-  const payDay =
-    selectedPayDay > lastDayOfMonth ? lastDayOfMonth : selectedPayDay
-
-  // 计算距离下次发工资的天数
-  let nextPayDay
-  if (currentDate < payDay) {
-    nextPayDay = dayjs(`${currentYear}-${currentMonth}-${payDay}`)
+  // 获取选择的支付日和时间
+  const selectedPayDay = timeForm.value.day;
+  const selectedPayTime = dayjs(`${currentYear}-${currentMonth}-${selectedPayDay}`);
+  // 计算下次发工资的日期和时间
+  let nextPayDateTime;
+  if (selectedPayTime.isBefore(currentDate)) {
+    // 如果选择的支付日已经过去，则下次发工资为下个月的选择支付日
+    const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+    const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
+    nextPayDateTime = dayjs(`${nextYear}-${nextMonth}-${selectedPayDay}`);
   } else {
-    const lastDayOfMonth = dayjs(`${currentYear}-${currentMonth}`)
-      .endOf("month")
-      .date()
-    nextPayDay = dayjs(`${currentYear}-${currentMonth}-${lastDayOfMonth}`)
+    // 如果选择的支付日在当前日期之后，则下次发工资为本月的选择支付日
+    nextPayDateTime = selectedPayTime;
   }
 
-  daysUntilNextPayDay.value = nextPayDay.diff(dayjs(), "day") + 1
-}
+  // 计算距离下次发工资的时间差（以小时为单位）
+  const hoursUntilNextPayDay = nextPayDateTime.diff(currentDate, 'hour');
+  // 如果需要返回天数而不是小时，可以使用以下代码
+
+  daysUntilNextPayDay.value = dayjs(nextPayDateTime).date() === currentDate.date() ? 0 : Math.ceil(hoursUntilNextPayDay / 24);
+};
 
 const calcNewYear = () => {
   const currentTime = dayjs()

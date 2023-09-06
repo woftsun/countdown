@@ -8,8 +8,8 @@
 1. 下载后解压，解压后文件夹内还有一个`countdown`文件夹，使用时用里面这个
 2. 以chrome浏览器为例，打开浏览器，点击右上角的三个点，选择更多工具，选择扩展程序（别的六拉你去也一样找到扩展程序即可）
 3. 在扩展程序页面右上角打开开发者模式，然后点击左上角加载已解压的扩展程序，选择刚才解压的`countdown`文件夹，就可以了
-   ![应用图片1](https://photo.woftsun.cn/image/EdQ)
-    ![应用图片2](https://photo.woftsun.cn/image/I9X)
+   ![应用图片1](https://photo.woftsun.cn/images/2023/09/03/QQ20230903232924.md.png)
+    ![应用图片2](https://photo.woftsun.cn/images/2023/09/03/image.md.png)
 4. 点击右上角的插件图标，输入你想要的时间，点击开始倒计时，就可以了
    ![应用图片3](https://photo.woftsun.cn/image/1ZQ)
 
