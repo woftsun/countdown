@@ -10,7 +10,7 @@
       class="border-b block w-full rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
       <ul class="w-full">
         <li
-            v-if="weekendTime.diff > 0"
+          v-if="weekendTime.diff > 0"
           class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
           距离下班还有 <strong>{{ weekendTime.hours }}</strong> 小时
           <strong>{{ weekendTime.minutes }}</strong> 分钟
@@ -27,13 +27,13 @@
           <strong>{{ weekendTime.minutes }}</strong> 分钟
         </li>
         <li
-            v-if="daysUntilNextPayDay !== 0"
+          v-if="daysUntilNextPayDay !== 0"
           class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
           距离发工资还有 <strong>{{ daysUntilNextPayDay }}</strong> 天
         </li>
         <li
-            v-else
-            class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 text-red-600">
+          v-else
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 text-red-600">
           <strong>工资发放，就在今天</strong>
         </li>
         <li
@@ -42,8 +42,7 @@
         </li>
       </ul>
 
-      <div
-        class="border-neutral-100 p-4 flex justify-between items-center">
+      <div class="border-neutral-100 p-4 flex justify-between items-center">
         <strong>当前时间: {{ dayjs().format("YYYY-MM-DD HH:mm:ss") }}</strong>
         <button
           v-if="!saveStatus"
@@ -67,8 +66,7 @@
       v-if="saveStatus"
       class="block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] mt-5">
       <div class="p-6">
-        <h5
-          class="mb-2 text-xl font-medium leading-tight text-neutral-800">
+        <h5 class="mb-2 text-xl font-medium leading-tight text-neutral-800">
           设置高光时刻
         </h5>
         <el-form
@@ -101,9 +99,15 @@
         </el-form>
         <p class="font-bold text-neutral-500 text-right">
           中午吃什么功能敬请期待！
+          <span style="color: #08b2eb; cursor: pointer" @click="showImg"
+            >获取最新版</span
+          >
         </p>
       </div>
     </div>
+    <el-dialog v-model="imgStatus" title="关注公众号更新第一时间推送">
+      <el-image style="width: 200px" src="https://ai.woftsun.cn/qrcode.jpg" />
+    </el-dialog>
   </div>
 </template>
 
@@ -113,8 +117,10 @@ import "element-plus/dist/index.css"
 
 import dayjs from "dayjs"
 import {
+  ElDialog,
   ElForm,
   ElFormItem,
+  ElImage,
   ElOption,
   ElSelect,
   ElTimeSelect
@@ -157,6 +163,7 @@ const messages = [
 
 initTE({ Ripple })
 const timeRef = ref(null)
+const imgStatus = ref(false)
 const timeForm = ref({})
 const newYearTime = ref()
 const afterWorkTime = ref({})
@@ -185,6 +192,10 @@ const calcAfterTime = () => {
   if (diff < 0 && currentTime.isSame(tempTime, "day")) {
     afterWorkTime.value.diff = 0
   }
+}
+
+const showImg = () => {
+  imgStatus.value = true
 }
 
 const dayOfWeekMap = {
@@ -229,46 +240,54 @@ const calcWeekend = () => {
     diff
   }
 
-  const specificDateTime = currentTime.set('hour', Number(timeForm.value.time.split(':')[0])).set('minute', Number(timeForm.value.time.split(':')[1]));
+  const specificDateTime = currentTime
+    .set("hour", Number(timeForm.value.time.split(":")[0]))
+    .set("minute", Number(timeForm.value.time.split(":")[1]))
 
-
-  if ((currentTime.isAfter(specificDateTime) && currentTime.hour() < 23)) duration.diff = 0
+  if (currentTime.isAfter(specificDateTime) && currentTime.hour() < 23)
+    duration.diff = 0
 
   weekendTime.value = duration
 }
 
 const calcPay = () => {
   // 获取当前年份和月份
-  const currentYear = dayjs().year();
-  const currentMonth = dayjs().month() + 1; // 月份从 0 开始，所以要加 1
+  const currentYear = dayjs().year()
+  const currentMonth = dayjs().month() + 1 // 月份从 0 开始，所以要加 1
 
   // 获取当前日期和时间
-  const currentDate = dayjs();
+  const currentDate = dayjs()
 
   // 获取选择的支付日和时间
-  const selectedPayDay = timeForm.value.day;
-  const selectedPayTime = dayjs(`${currentYear}-${currentMonth}-${selectedPayDay}`);
+  const selectedPayDay = timeForm.value.day
+  const selectedPayTime = dayjs(
+    `${currentYear}-${currentMonth}-${selectedPayDay}`
+  )
   // 计算下次发工资的日期和时间
-  let nextPayDateTime;
+  let nextPayDateTime
   if (selectedPayTime.isBefore(currentDate)) {
     // 如果选择的支付日已经过去，则下次发工资为下个月的选择支付日
-    const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
-    const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
-    nextPayDateTime = dayjs(`${nextYear}-${nextMonth}-${selectedPayDay}`);
+    const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1
+    const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear
+    nextPayDateTime = dayjs(`${nextYear}-${nextMonth}-${selectedPayDay}`)
   } else {
     // 如果选择的支付日在当前日期之后，则下次发工资为本月的选择支付日
-    nextPayDateTime = selectedPayTime;
+    nextPayDateTime = selectedPayTime
   }
 
   // 计算距离下次发工资的时间差（以小时为单位）
-  const hoursUntilNextPayDay = nextPayDateTime.diff(currentDate, 'hour');
+  const hoursUntilNextPayDay = nextPayDateTime.diff(currentDate, "hour")
   // 如果需要返回天数而不是小时，可以使用以下代码
 
-  daysUntilNextPayDay.value = dayjs(nextPayDateTime).date() === currentDate.date() ? 0 : Math.ceil(hoursUntilNextPayDay / 24);
-};
+  daysUntilNextPayDay.value =
+    dayjs(nextPayDateTime).date() === currentDate.date()
+      ? 0
+      : Math.ceil(hoursUntilNextPayDay / 24)
+}
 
 const calcNewYear = () => {
   const currentTime = dayjs()
+  console.log(lunarDate.value)
   newYearTime.value = dayjs(lunarDate.value).diff(currentTime, "day")
 }
 
@@ -293,7 +312,8 @@ const updateData = () => {
 
 onMounted(async () => {
   const lYear = calendar.lunar2solar().lYear
-  lunarDate.value = calendar.lunar2solar(lYear, 12, 30).lunarDate
+  console.log(calendar.lunar2solar(lYear, 12, 30))
+  lunarDate.value = calendar.lunar2solar(lYear, 12, 30).date
 
   const initTime = await storage.get("time") // { color: "red" }
   if (initTime && Object.keys(initTime)?.length) {
