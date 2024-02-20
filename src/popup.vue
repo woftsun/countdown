@@ -312,8 +312,8 @@ const updateData = () => {
 
 onMounted(async () => {
   const lYear = calendar.lunar2solar().lYear
-  console.log(calendar.lunar2solar(lYear, 12, 30))
-  lunarDate.value = calendar.lunar2solar(lYear, 12, 30).date
+  lunarDate.value = calendar.lunar2solar(lYear, 12, 29).date
+  console.log(calendar.lunar2solar(lYear, 12, 29))
 
   const initTime = await storage.get("time") // { color: "red" }
   if (initTime && Object.keys(initTime)?.length) {
