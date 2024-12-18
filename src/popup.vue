@@ -1,27 +1,28 @@
 <template>
-  <div style="width: 500px" class="p-4">
-    <div
-      class="mb-4 rounded-md border-l-[6px] border-solid border-blue-600 bg-blue-100 p-2.5">
-      今天是
-      <strong>{{ dayOfWeekMap[dayjs().locale("zh-cn").format("dddd")] }}</strong
-      >，{{ getMessage }}
+  <div style="width: 500px" class="p-4 bg-gray-50">
+    <div class="mb-4 rounded-lg border-l-[4px] border-solid border-blue-600 bg-gradient-to-r from-blue-50 to-white p-3 shadow-sm transition-all hover:shadow-md">
+      <div class="flex items-center gap-2">
+        <strong class="text-base text-blue-600">{{ dayOfWeekMap[dayjs().locale("zh-cn").format("dddd")] }}</strong>
+        <span class="text-sm font-bold text-gray-900">{{ getMessage }}</span>
+      </div>
     </div>
-    <div
-      class="border-b block w-full rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
-      <ul class="w-full">
-        <li
-          v-if="weekendTime.diff > 0"
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
-          距离下班还有 <strong>{{ weekendTime.hours }}</strong> 小时
-          <strong>{{ weekendTime.minutes }}</strong> 分钟
+    <div class="rounded-xl bg-white shadow-lg transition-all hover:shadow-xl">
+      <ul class="divide-y divide-gray-100">
+        <li v-if="weekendTime.diff > 0" 
+            class="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors text-[13px]">
+          <span class="text-gray-600">距离下班还有</span>
+          <span class="font-medium">
+            <strong class="text-blue-600">{{ weekendTime.hours }}</strong> 小时
+            <strong class="text-blue-600">{{ weekendTime.minutes }}</strong> 分钟
+          </span>
         </li>
         <li
           v-else
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 text-red-600">
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 text-red-600 text-[13px]">
           <strong>下班了，快回家吧！</strong>
         </li>
         <li
-          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3">
+          class="w-full border-b-2 border-neutral-100 border-opacity-100 px-4 py-3 text-[13px]">
           距离周末还有 <strong>{{ weekendTime.days }}</strong> 天
           <strong>{{ weekendTime.hours }}</strong> 小时
           <strong>{{ weekendTime.minutes }}</strong> 分钟
@@ -42,14 +43,12 @@
         </li>
       </ul>
 
-      <div class="border-neutral-100 p-4 flex justify-between items-center">
-        <strong>当前时间: {{ dayjs().format("YYYY-MM-DD HH:mm:ss") }}</strong>
+      <div class="border-t border-gray-100 p-4 flex justify-between items-center bg-gray-50 rounded-b-xl">
+        <strong class="text-gray-700">{{ dayjs().format("YYYY-MM-DD HH:mm:ss") }}</strong>
         <button
           v-if="!saveStatus"
-          type="button"
           @click="setTime"
-          class="inline-block rounded border-2 border-primary-100 px-6 pb-[6px] pt-2 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:border-primary-accent-100 hover:bg-neutral-500 hover:bg-opacity-10 focus:border-primary-accent-100 focus:outline-none focus:ring-0 active:border-primary-accent-200"
-          data-te-ripple-init>
+          class="px-6 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium transition-all hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
           设置
         </button>
         <button
@@ -62,51 +61,56 @@
         </button>
       </div>
     </div>
-    <div
-      v-if="saveStatus"
-      class="block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] mt-5">
-      <div class="p-6">
-        <h5 class="mb-2 text-xl font-medium leading-tight text-neutral-800">
-          设置高光时刻
-        </h5>
-        <el-form
-          ref="timeRef"
-          label-position="right"
-          :model="timeForm"
-          :rules="rules"
-          style="max-width: 460px; margin-top: 25px">
-          <el-form-item prop="time" required label="下班时间:">
-            <el-time-select
-              style="width: 60%"
-              v-model="timeForm.time"
-              start="08:30"
-              step="00:15"
-              end="23:30"
-              placeholder="请选择" />
-          </el-form-item>
-          <el-form-item prop="day" required label="工资时间:">
-            <el-select
-              style="width: 60%"
-              v-model="timeForm.day"
-              placeholder="请选择">
-              <el-option
-                v-for="day in 31"
-                :key="day"
-                :label="day.toString()"
-                :value="day" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <p class="font-bold text-neutral-500 text-right">
-          中午吃什么功能敬请期待！
-          <span style="color: #08b2eb; cursor: pointer" @click="showImg"
-            >获取最新版</span
-          >
-        </p>
-      </div>
+    <div v-if="saveStatus"
+         class="mt-6 rounded-xl bg-white shadow-lg p-6 transition-all">
+      <h5 class="text-xl font-semibold text-gray-800 mb-6">设置高光时刻</h5>
+      <el-form
+        ref="timeRef"
+        :model="timeForm"
+        :rules="rules"
+        class="space-y-4">
+        <el-form-item prop="time" required label="下班时间:" 
+                      class="flex items-center gap-4">
+          <el-time-select
+            v-model="timeForm.time"
+            class="flex-1 max-w-[240px]"
+            start="08:30"
+            step="00:15"
+            end="23:30"
+            placeholder="请选择" />
+        </el-form-item>
+        <el-form-item prop="day" required label="工资时间:">
+          <el-select
+            style="width: 60%"
+            v-model="timeForm.day"
+            placeholder="请选择">
+            <el-option
+              v-for="day in 31"
+              :key="day"
+              :label="day.toString()"
+              :value="day" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <p class="font-bold text-neutral-500 text-right">
+        中午吃什么功能敬请期待！
+        <span style="color: #08b2eb; cursor: pointer" @click="showImg"
+          >获取最新版</span
+        >
+      </p>
     </div>
-    <el-dialog v-model="imgStatus" title="关注公众号更新第一时间推送">
-      <el-image style="width: 200px" src="https://ai.woftsun.cn/qrcode.jpg" />
+    <el-dialog
+      v-model="imgStatus"
+      title="关注公众号获取最新更新"
+      class="rounded-xl"
+      width="400px">
+      <div class="flex flex-col items-center">
+        <el-image
+          style="width: 240px"
+          class="rounded-lg shadow-md"
+          src="https://ai.woftsun.cn/qrcode.jpg" />
+        <p class="mt-4 text-gray-600">扫码关注，第一时间获取更新提醒</p>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -151,7 +155,7 @@ const rules = {
 }
 
 const messages = [
-  "工作再累，也别忘了摸鱼哦，钱是老板的，命是自己的",
+  "工作再累，也别忘了摸鱼哦，钱是老板的，命是己的",
   "漫长的岁月 竟没有一天适合上班",
   "多站起来走走，别老在工位上",
   "人的终极目标是闲情逸致 而不是工作",
@@ -225,7 +229,7 @@ const calcWeekend = () => {
     .set("second", 0)
 
   const currentTime = dayjs()
-  // 如果当前时间已经过了本周五的下班时间，将目标时间设为下周五的下班时间
+  // 如果当前时间已经过了本周五的下��时间���将目标时间设为下周五的下班时间
   if (currentTime.isAfter(closingTimeFriday)) {
     closingTimeFriday = closingTimeFriday.add(7, "day")
   }
@@ -324,32 +328,35 @@ onMounted(async () => {
     timeForm.value.time = "18:00"
   }
 
-  updateData() // 调用一次以确保初始数据正确
+  updateData() // 调用一次以确保初始数据确
 
   setInterval(updateData, 1000) // 每秒钟更新一次数据
 })
 </script>
-<style>
-html {
-  margin: 0;
-  padding: 0;
+<style scoped>
+/* 添加一些过渡动画 */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 
-.text {
-  font-size: 14px;
+/* 优化 Element Plus 组件样式 */
+:deep(.el-select),
+:deep(.el-time-select) {
+  width: 100%;
 }
 
-.item {
-  margin-bottom: 18px;
+:deep(.el-input__wrapper) {
+  border-radius: 0.5rem;
 }
 
-.box-card {
-  width: 480px;
+:deep(.el-form-item__label) {
+  font-weight: 500;
+  color: #374151;
 }
 </style>
